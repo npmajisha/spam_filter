@@ -1,4 +1,4 @@
-#this program is to test reading of all files in the directory
+#this program is to read all files in the directory and create the training file
 
 import os
 import string
