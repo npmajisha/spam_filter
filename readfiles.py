@@ -10,6 +10,7 @@ def add_label(filename):
     else:
         return 'SPAM '
 
+#ignoring punctuation marks
 def remove_punctuation(line):
     new_line = ""
     for char in line:
@@ -19,15 +20,17 @@ def remove_punctuation(line):
             new_line += char
     return new_line
 
+
 def main():
 
     o_file = open("spam_training.txt", 'w')
     feature_list = ""
+    
     for root , dirs , files in os.walk(".",topdown=False):
         for filename in files:
             if filename.startswith('HAM') or filename.startswith('SPAM'):
                 i_file = open(filename,'r')
-                feature_list = add_label(filename)
+                feature_list = add_label(filename) #add label 'HAM' or 'SPAM'
                 for line in i_file:                    
                     feature_list += remove_punctuation(line).rstrip() + ' '
 
