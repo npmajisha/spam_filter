@@ -1,4 +1,4 @@
-#this program is to read all files in the directory and create the training file
+#this program is to read all the training set files in the directory and create the training file
 
 import os
 import string
