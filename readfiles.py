@@ -1,8 +1,9 @@
-#this program is to read all the training set files in the directory and create the training file
+﻿#this program is to read all the training set files in the directory and create the training file
 
 import os
 import string
 import re
+import sys
 
 #add label based on the filename
 def add_label(filename):
@@ -25,11 +26,13 @@ def main():
 
     o_file = open("spam_training.txt", 'w')
     feature_list = ""
-    
-    for root , dirs , files in os.walk(".",topdown=False):
+    print(sys.argv[1])
+    for root , dirs , files in os.walk('./'+sys.argv[1],topdown=False):
+
         for filename in files:
             if filename.startswith(('HAM','SPAM')):
-                i_file = open(filename,'r')
+                print(filename)
+                i_file = open('./'+sys.argv[1]+'/'+filename,'r' , encoding = 'latin-1')
                 feature_list = add_label(filename) #add label 'HAM' or 'SPAM'
                 for line in i_file:                    
                     feature_list += remove_punctuation(line.lower())
