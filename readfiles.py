@@ -32,7 +32,7 @@ def main():
                 i_file = open(filename,'r')
                 feature_list = add_label(filename) #add label 'HAM' or 'SPAM'
                 for line in i_file:                    
-                    feature_list += remove_punctuation(line)
+                    feature_list += remove_punctuation(line.lower())
                     
                 o_file.write(feature_list + '\n')
                 

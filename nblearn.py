@@ -12,28 +12,42 @@ def main():
 	
 	#open training file
 	training_file = open(sys.argv[1], 'r')
-	class_set = set() #all possible classifications HAM or SPAM etc
-	class_vocab_map = {}
-	class_list = []
+	model_file = open(sys.argv[2], 'w')
+	
+	class_vocab_map = {} #a dictionary to between class and the vocabulary
 	
 	words = []
 	
 	for line in training_file:	
 		vocab = {} #a dictionary to store the word and corresponding counts
-		words = re.split(r'\s+' , line.rstrip())
+		words = re.split(r'\s+' , line.rstrip()) #split on spaces and remove new line character
 		
+		if words[0] not in class_vocab_map:
+			class_vocab_map[words[0]] = vocab
+		else:
+			vocab = class_vocab_map[words[0]]
+			
 		for word in words[1:]:
 			if word not in vocab:
 				vocab[word] = 1
 			else:
 				vocab[word] = vocab[word] + 1
 						
-		if words[0] not in class_vocab_map:
-			class_vocab_map[words[0]] = vocab
-		else:
-			class_vocab_map[words[0]].update(vocab)
-	print(class_vocab_map)
 		
+	log = ""		
+	for key in class_vocab_map:
+		print(key)
+		log += '<' + key + '>' + '\n'
+		vocabulary = class_vocab_map[key]
+		print(vocabulary)
+		for item in sorted(vocabulary.keys()):
+			log += '<' + item + '>' + str(vocabulary[item]) + '<' + '/' + item + '>' + '\n'
+		log+= '</' + key + '>'+ '\n'	
+		
+	model_file.write(log)
+	
+	training_file.close()	
+	model_file.close()
 	return
 
 
