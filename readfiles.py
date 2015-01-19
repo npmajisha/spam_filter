@@ -28,7 +28,7 @@ def main():
     
     for root , dirs , files in os.walk(".",topdown=False):
         for filename in files:
-            if filename.startswith('HAM') or filename.startswith('SPAM'):
+            if filename.startswith(('HAM','SPAM')):
                 i_file = open(filename,'r')
                 feature_list = add_label(filename) #add label 'HAM' or 'SPAM'
                 for line in i_file:                    
@@ -39,16 +39,6 @@ def main():
                 i_file.close()
 
     o_file.close()
-
-
-
-
-
-
-
-
-
-
 
 
 #boilerplate for main
