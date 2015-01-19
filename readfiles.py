@@ -2,6 +2,7 @@
 
 import os
 import string
+import re
 
 #add label based on the filename
 def add_label(filename):
@@ -12,13 +13,12 @@ def add_label(filename):
 
 #ignoring punctuation marks
 def remove_punctuation(line):
-    new_line = ""
-    for char in line:
-        if char in string.punctuation:
-            new_line += ' '
-        else:
-            new_line += char
-    return new_line
+    words = []
+    words = re.split(r'\W+', line.rstrip())  #regular expression to split on non-word characters
+  
+    new_line = ' '.join(words)
+
+    return new_line + ' '
 
 
 def main():
@@ -32,9 +32,10 @@ def main():
                 i_file = open(filename,'r')
                 feature_list = add_label(filename) #add label 'HAM' or 'SPAM'
                 for line in i_file:                    
-                    feature_list += remove_punctuation(line).rstrip() + ' '
-
+                    feature_list += remove_punctuation(line)
+                    
                 o_file.write(feature_list + '\n')
+                
                 i_file.close()
 
     o_file.close()
