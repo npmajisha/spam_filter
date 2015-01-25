@@ -42,6 +42,7 @@ def main():
 		print(vocabulary)
 		for item in sorted(vocabulary.keys()):
 			log += '<' + item + '>' + str(vocabulary[item]) + '<' + '/' + item + '>' + '\n'
+		print(str(len(vocabulary)))
 		log+= '</' + key + '>'+ '\n'	
 		
 	model_file.write(log)
