@@ -44,7 +44,7 @@ def main():
 		log+= '</' + key + '>'+ '\n'
 	
 	model_file.write(classes)
-    model_file.write(log)
+	model_file.write(log)
 	
 	training_file.close()	
 	model_file.close()
