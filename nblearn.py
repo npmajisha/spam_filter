@@ -9,10 +9,10 @@ import codecs
 def main():
 	
 	if len(sys.argv) < 2:
-		print("Usage : python3 nblearn.py training_file model_file")
-		exit(0)
+	print("Usage : python3 nblearn.py training_file model_file")
+	exit(0)
 
-    #total_number_of_documents
+	#total_number_of_documents
 	tot_docs = 0
 	#open training file
 	training_file = codecs.open(sys.argv[1], 'r', 'utf-8',errors='ignore')
