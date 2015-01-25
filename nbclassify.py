@@ -4,29 +4,47 @@ import sys
 import re
 import codecs
 
+class Training_model:
+    def __init__(self,class_list, count_map , vocab_map):
+        self.count_map = count_map
+        self.vocab_map = vocab_map
+        self.class_list = class_list
+    
+    def add_one_smoothing(self , label , word ):
+        vocab = {}
+        vocab = self.vocab_map[label]
+        return vocab[word]+1
+    
+    def get_N_and_k(label):
+        count_tuple= ()
+        count_tuple = self.count_map[label]
+        return count_tuple
+    
+    def get_labels(self):
+        return self.class_list
+        
+
+def classify(t_model,words):
+    
+    #get the available classes
+    classes = []
+    classes = t_model.get_labels()
+    
+    for label in classes:
+        
+
 def xml_parser(line):
     tags = []
     tags = re.split(r'\s+',line)
-    return tags[1:-2]
-
-def extract_words(filename):
-    f = open(filename , 'r')
-    words = []
-    for line in f:
-        words.extend(re.findall(r"\w+|[^\w\s]",(line.lower()).rstrip()))
-    return words
-        
+    return tags[1:-2]   
+    
+    
 
 def main():
     
-    #take the input file which has to be classified
-    words_from_input = []
-    words_from_input = extract_words(sys.argv[1])
     
     #read the model file and build a dictionary
-    model_file = codecs.open(sys.argv[2],'r+', 'utf-8')
-    output_file = codecs.open("output.txt" ,'a', 'utf-8')
-    i=0
+    model_file = codecs.open(sys.argv[1],'r+', 'utf-8',errors='ignore')
     classes = []
     lines = model_file.readlines()
     classes = re.split(r'\s+' , lines[0].rstrip())
@@ -54,7 +72,20 @@ def main():
     print(class_vocab_count['HAM'])
     print(class_vocab_count['SPAM'])
     
-
+    training_model = Training_model(classes,class_vocab_count,class_vocab_map)
+    print(training_model.get_labels())
+    output_file = codecs.open("output.txt" ,'w+', 'utf-8',errors='ignore')
+    
+    
+    #take the input file which has to be classified
+    #each line is a document. Split each line on the basis of spaces
+    test_file = codecs.open(sys.argv[1],'r+','utf-8',errors='ignore')
+    
+    label = ''
+    for line in test_file:
+        words = []
+        words = re.split(r'\s+' , line.rstrip()) #split on spaces and remove new line character
+        label = classify(training_model,words) #call the classify method passing the training model
 
 
 #boilerplate for main

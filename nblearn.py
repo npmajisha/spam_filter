@@ -1,24 +1,28 @@
-#Naive Bayes Classifier - Author Majisha
+#Naive Bayes Classifier
 #this code is to learn from the training file(input argument)
 #and develop a learning model that will be saved in a model 
 #file (input argument) 
 import sys
 import re
+import codecs
+
 def main():
 	
 	if len(sys.argv) < 2:
-		print("Invalid syntax")
+		print("Usage : python3 nblearn.py training_file model_file")
 		exit(0)
-	
+
+    #total_number_of_documents
+	tot_docs = 0
 	#open training file
-	training_file = open(sys.argv[1], 'r')
-	model_file = open(sys.argv[2], 'w')
+	training_file = codecs.open(sys.argv[1], 'r', 'utf-8',errors='ignore')
+	model_file = codecs.open(sys.argv[2], 'w' , 'utf-8',errors='ignore')
 	
 	class_vocab_map = {} #a dictionary to between class and the vocabulary
 	classes = []
 	words = []
-	
-	for line in training_file:	
+
+	for line in training_file:
 		vocab = {} #a dictionary to store the word and corresponding counts
 		words = re.split(r'\s+' , line.rstrip()) #split on spaces and remove new line character
 		
@@ -35,8 +39,8 @@ def main():
 						
 		
 	
+    #constructing the xml elements
 	log = ""
-	
 	for key in class_vocab_map:
 		inner_element = ""
 		open_tag = ""

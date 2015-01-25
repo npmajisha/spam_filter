@@ -1,9 +1,11 @@
 ﻿#this program is to read all the training set files in the directory and create the training file
+#accepts two arguments 1.Directory containing the training set files 2.the training output file name
 
 import os
 import string
 import re
 import sys
+import codecs
 
 #add label based on the filename
 def add_label(filename):
@@ -12,12 +14,12 @@ def add_label(filename):
     elif filename.startswith('SPAM'):
         return 'SPAM '
     elif filename.startswith('POS'):
-        return 'POS'
+        return 'POS '
     elif filename.startswith('NEG'):
-        return 'NEG'
+        return 'NEG '
 
-#ignoring punctuation marks
-def remove_punctuation(line):
+#keeping punctuations
+def tokenize(line):
     words = []
     words = re.findall(r"\w+|[^\w\s]",line.rstrip()) #regular expression to split on non-word characters
   
@@ -27,18 +29,22 @@ def remove_punctuation(line):
 
 
 def main():
-
-    o_file = open("spam_training.txt", 'w')
+    
+    if len(sys.argv) < 3:
+        print("Usage : python3 readfiles.py /path/to/directory training_output_filename")
+        exit(0)
+    
+    o_file = codecs.open(sys.argv[2], 'w+', 'utf-8')
     feature_list = ""
-    print(sys.argv[1])
+    
     for root , dirs , files in os.walk('./'+sys.argv[1],topdown=False):
 
         for filename in files:
             if filename.endswith('.txt'):
-                i_file = open('./'+sys.argv[1]+'/'+filename,'r' , encoding = 'latin-1')
+                i_file = codecs.open('./'+sys.argv[1]+'/'+filename,'r+' , 'utf-8', errors='ignore')
                 feature_list = add_label(filename) #add label 'HAM' or 'SPAM'
                 for line in i_file:                    
-                    feature_list += remove_punctuation(line.lower())
+                    feature_list += tokenize(line.lower())
                     
                 o_file.write(feature_list + '\n')
                 
