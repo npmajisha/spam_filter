@@ -37,12 +37,10 @@ def main():
 	log = ""		
 	for key in class_vocab_map:
 		print(key)
-		log += '<' + key + '>' + '\n'
 		vocabulary = class_vocab_map[key]
-		print(vocabulary)
+		log += '<' + key + str(len(vocabulary)) + '>' + '\n'
 		for item in sorted(vocabulary.keys()):
 			log += '<' + item + '>' + str(vocabulary[item]) + '<' + '/' + item + '>' + '\n'
-		print(str(len(vocabulary)))
 		log+= '</' + key + '>'+ '\n'	
 		
 	model_file.write(log)
