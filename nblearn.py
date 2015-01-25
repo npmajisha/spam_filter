@@ -44,7 +44,7 @@ def main():
 		total_words = 0
 		classes.append(key)
 		vocabulary = class_vocab_map[key]
-		open_tag += '<' + key + ' ' + str(len(vocabulary)) + ' '
+		open_tag += '< ' + key + ' ' + str(len(vocabulary)) + ' '
 		for item in sorted(vocabulary.keys()):
 			inner_element += '< ' + item + ' ' + str(vocabulary[item])  + ' />' + '\n'
 			total_words += vocabulary[item]
