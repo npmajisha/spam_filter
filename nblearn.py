@@ -15,7 +15,7 @@ def main():
 	model_file = open(sys.argv[2], 'w')
 	
 	class_vocab_map = {} #a dictionary to between class and the vocabulary
-	
+	classes = []
 	words = []
 	
 	for line in training_file:	
@@ -34,15 +34,16 @@ def main():
 				vocab[word] = vocab[word] + 1
 						
 		
-	log = ""		
+	log = ""	
 	for key in class_vocab_map:
-		print(key)
+		classes.append(key)
 		vocabulary = class_vocab_map[key]
-		log += '<' + key + str(len(vocabulary)) + '>' + '\n'
+		log += '<' + key + ' ' + str(len(vocabulary)) + '>' + '\n'
 		for item in sorted(vocabulary.keys()):
 			log += '<' + item + '>' + str(vocabulary[item]) + '<' + '/' + item + '>' + '\n'
-		log+= '</' + key + '>'+ '\n'	
-		
+		log+= '</' + key + '>'+ '\n'
+	
+    
 	model_file.write(log)
 	
 	training_file.close()	
