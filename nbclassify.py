@@ -6,7 +6,7 @@ import re
 def xml_parser(line):
 	tags = []
 	tags = re.split(r'\s+',line)
-    return tags
+    return tags[1:-1]
 
 def extract_words(filename):
     f = open(filename , 'r')
