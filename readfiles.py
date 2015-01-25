@@ -9,13 +9,17 @@ import sys
 def add_label(filename):
     if filename.startswith('HAM'):
         return 'HAM '
-    else:
+    elif filename.startswith('SPAM'):
         return 'SPAM '
+    elif filename.startswith('POS'):
+        return 'POS'
+    elif filename.startswith('NEG'):
+        return 'NEG'
 
 #ignoring punctuation marks
 def remove_punctuation(line):
     words = []
-    words = re.split(r'\W+', line.rstrip())  #regular expression to split on non-word characters
+    words = re.findall(r"\w+|[^\w\s]",line.rstrip()) #regular expression to split on non-word characters
   
     new_line = ' '.join(words)
 
@@ -30,8 +34,7 @@ def main():
     for root , dirs , files in os.walk('./'+sys.argv[1],topdown=False):
 
         for filename in files:
-            if filename.startswith(('HAM','SPAM')):
-                print(filename)
+            if filename.endswith('.txt'):
                 i_file = open('./'+sys.argv[1]+'/'+filename,'r' , encoding = 'latin-1')
                 feature_list = add_label(filename) #add label 'HAM' or 'SPAM'
                 for line in i_file:                    
