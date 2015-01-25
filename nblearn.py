@@ -24,8 +24,8 @@ def main():
 		
 		if words[0] not in class_vocab_map:
 			class_vocab_map[words[0]] = vocab
-		else:
-			vocab = class_vocab_map[words[0]]
+		
+		vocab = class_vocab_map[words[0]]
 			
 		for word in words[1:]:
 			if word not in vocab:
@@ -34,16 +34,25 @@ def main():
 				vocab[word] = vocab[word] + 1
 						
 		
-	log = ""	
+	
+	log = ""
+	
 	for key in class_vocab_map:
+		inner_element = ""
+		open_tag = ""
+		close_tag = ""
+		total_words = 0
 		classes.append(key)
 		vocabulary = class_vocab_map[key]
-		log += '<' + key + ' ' + str(len(vocabulary)) + '>' + '\n'
+		open_tag += '<' + key + ' ' + str(len(vocabulary)) + ' '
 		for item in sorted(vocabulary.keys()):
-			log += '<' + item + '>' + str(vocabulary[item]) + '<' + '/' + item + '>' + '\n'
-		log+= '</' + key + '>'+ '\n'
+			inner_element += '< ' + item + ' ' + str(vocabulary[item])  + ' />' + '\n'
+			total_words += vocabulary[item]
+		open_tag += str(total_words) + ' >' + '\n'
+		close_tag = '</ ' + key + ' >'+ '\n'
+		log+= open_tag + inner_element + close_tag
 	
-	model_file.write(classes)
+	model_file.write(str(' '.join(classes) + '\n'))
 	model_file.write(log)
 	
 	training_file.close()	
