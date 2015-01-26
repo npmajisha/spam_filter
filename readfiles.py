@@ -17,6 +17,8 @@ def add_label(filename):
         return 'POS '
     elif filename.startswith('NEG'):
         return 'NEG '
+    else:
+        return ''
 
 #keeping punctuations
 def tokenize(line):
@@ -30,25 +32,30 @@ def tokenize(line):
 
 def main():
     
-    if len(sys.argv) < 3:
-        print("Usage : python3 readfiles.py /path/to/directory training_output_filename")
+    if len(sys.argv) < 4:
+        print("Usage : python3 readfiles.py --test/train /path/to/directory output_filename")
         exit(0)
     
-    o_file = codecs.open(sys.argv[2], 'w+', 'utf-8')
+    o_file = codecs.open(sys.argv[3], 'w+', 'utf-8')
     feature_list = ""
-    
-    for root , dirs , files in os.walk('./'+sys.argv[1],topdown=False):
+
+        
+    for root , dirs , files in os.walk('./'+sys.argv[2],topdown=False):
 
         for filename in files:
             if filename.endswith('.txt'):
-                i_file = codecs.open('./'+sys.argv[1]+'/'+filename,'r+' , 'utf-8', errors='ignore')
-                feature_list = add_label(filename) #add label 'HAM' or 'SPAM'
+                i_file = codecs.open('./'+sys.argv[2]+'/'+filename,'r+' , 'utf-8', errors='ignore')
+                if sys.argv[1]=='--train':
+                    feature_list = add_label(filename) #add label 'HAM' or 'SPAM'
+                else:
+                    feature_list = filename + ' '
+                                
                 for line in i_file:                    
                     feature_list += tokenize(line.lower())
                     
-                o_file.write(feature_list + '\n')
-                
+                o_file.write(feature_list+'\n')
                 i_file.close()
+            
 
     o_file.close()
 
