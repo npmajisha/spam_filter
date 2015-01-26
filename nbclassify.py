@@ -11,7 +11,14 @@ class Training_model:
         self.vocab_map = vocab_map
         self.class_list = class_list
         self.class_prior = class_priors
-    
+        count_tuple= ()
+        self.vocab_size_k = 0
+        #count_tuple[0] contains the unique number of words in the corresponding class
+        #sum over all the possible labels in the total vocab size
+        for label in self.count_map:
+            count_tuple = self.count_map[label]
+            self.vocab_size_k += count_tuple[0]
+        print("Unique Vocab size", self.vocab_size_k)
     
     def get_class_vocab_count(self,label):
         return self.count_map[label]
@@ -19,10 +26,8 @@ class Training_model:
     def get_class_vocab(self, label):
         return self.vocab_map[label]
     
-    def get_N_and_k(self,label):
-        count_tuple= ()
-        count_tuple = self.count_map[label]
-        return count_tuple
+    def get_k_vocab_size(self):
+        return self.vocab_size_k
     
     def get_prior(self,label):
         return self.class_prior[label]
@@ -36,25 +41,31 @@ def classify(t_model,words):
     #get the available classes
     classes = []
     classes = t_model.get_labels()
+    #get the vocab size of the model
+    total_vocab_size = t_model.get_k_vocab_size()
     prob_doc_class = []
     max=0.0
     label_classified = ''
     for label in classes: #calculare P(c|d) = P(c) * P(d|c) = P(c) * P(w1|c) * P(w2|c) ... P(wn|c)
-        print(label)
+        #print(label)
         p_c_given_d = 0.0
         p_d_given_c = 0.0
         prior_c = math.log(t_model.get_prior(label))
-        print(str(prior_c))
+        #print(str(prior_c))
         class_vocab = {}
         class_vocab = t_model.get_class_vocab(label)
         class_vocab_count = ()
-        class_vocab_count = t_model.get_class_vocab_count(label)
+        class_vocab_count = t_model.get_class_vocab_count(label)       
+    
         
+        #add one smoothing
+        #P(word|c) = count(word,c)+1 / N(:total no of words in the class) + k(:total vocab size)
         for word in words:
             if word in class_vocab:
-                p_d_given_c += math.log(float(class_vocab[word]/class_vocab_count[1]))
+                p_d_given_c += math.log(float((class_vocab[word]+1)/(class_vocab_count[1]+total_vocab_size)))
             else:
-                p_d_given_c += math.log(float(1/(class_vocab_count[0]+class_vocab_count[1])))
+                #for unknown words just keeping 1 in the numerator
+                p_d_given_c += math.log(float(1/(class_vocab_count[1]+total_vocab_size)))
         
         p_c_given_d = prior_c + p_d_given_c
         prob_doc_class.append((p_c_given_d,label))
@@ -125,7 +136,7 @@ def main():
         words = []
         words = re.split(r'\s+' , line.rstrip()) #split on spaces and remove new line character
         label = classify(training_model,words[1:]) #call the classify method passing the training model
-        #print(words[0],label)
+        print(words[0],label)
         log = words[0] +' '+ label
         output_file.write(log+'\n')
     

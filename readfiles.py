@@ -24,7 +24,6 @@ def add_label(filename):
 def tokenize(line):
     words = []
     words = re.findall(r"\w+|[^\w\s]",line.rstrip()) #regular expression to split on non-word characters
-  
     new_line = ' '.join(words)
 
     return new_line + ' '
