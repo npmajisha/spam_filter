@@ -5,10 +5,10 @@
 import sys
 import re
 import codecs
-import math
 
 def main():
     
+    #usage details
     if len(sys.argv) < 2:
         print("Usage : python3 nblearn.py training_file model_file")
         exit(0)
@@ -18,8 +18,8 @@ def main():
     training_file = codecs.open(sys.argv[1], 'r', 'utf-8',errors='ignore')
     model_file = codecs.open(sys.argv[2], 'w' , 'utf-8',errors='ignore')	
     
-    class_vocab_map = {} #a dictionary to between class and the vocabulary
-    class_docs = {} #class and documents count
+    class_vocab_map = {} #a dictionary to store class and the corresponding vocabulary
+    class_docs = {} #dictionary to store class and documents count
     classes = []
     words = []
     
@@ -57,24 +57,32 @@ def main():
         lose_tag = ""
         total_words = 0
         classes.append(key)
+        
+        #header is for e.g. HAM HAM_prior SPAM SPAM_prior
         header += key + ' ' + str(float(class_docs[key]/tot_docs)) + ' '
         vocabulary = class_vocab_map[key]
         
-        
+        #open tag for each class < HAM unique_vocabulary_size total_words >
         open_tag += '< ' + key + ' ' + str(len(vocabulary)) + ' '
 		
+        #for each item tag e.g. < word count_of_occurrences >
         for item in sorted(vocabulary.keys()):
             inner_element += '< ' + item + ' ' + str(vocabulary[item])  + ' />' + '\n'
             total_words += vocabulary[item]
+            
         open_tag += str(total_words) + ' >' + '\n'
+        
+        #close tag for class e.g.</ HAM>
         close_tag = '</ ' + key + ' >'+ '\n'
+        
         log+= open_tag + inner_element + close_tag
-    
-    
-    model_file.write(str( header + '\n'))
-    model_file.write(log)
-    
+        
+    #close the training file    
     training_file.close()
+    
+    #write to the model file
+    model_file.write(str( header + '\n'))
+    model_file.write(log)    
     model_file.close()
     return
 

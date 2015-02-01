@@ -1,24 +1,18 @@
 #this program is to classify input files by using the model file that is built
+#usage : python3 nbclassify.py model_file test_file
 
 import sys
 import re
 import codecs
 import math
 
+#class to store the training model read from the model_file
 class Training_model:
     def __init__(self,class_list,class_priors, count_map , vocab_map):
-        self.count_map = count_map
+        self.count_map = count_map 
         self.vocab_map = vocab_map
         self.class_list = class_list
         self.class_prior = class_priors
-        count_tuple= ()
-        self.vocab_size_k = 0
-        #count_tuple[0] contains the unique number of words in the corresponding class
-        #sum over all the possible labels in the total vocab size
-        for label in self.count_map:
-            count_tuple = self.count_map[label]
-            self.vocab_size_k += count_tuple[0]
-        print("Unique Vocab size", self.vocab_size_k)
     
     def get_class_vocab_count(self,label):
         return self.count_map[label]
@@ -26,8 +20,10 @@ class Training_model:
     def get_class_vocab(self, label):
         return self.vocab_map[label]
     
-    def get_k_vocab_size(self):
-        return self.vocab_size_k
+    def get_k_vocab_size(self,label):
+        count_tuple = self.count_map[label]
+        #count_tuple[0] contains the unique number of words in the corresponding class
+        return count_tuple[0]
     
     def get_prior(self,label):
         return self.class_prior[label]
@@ -41,8 +37,7 @@ def classify(t_model,words):
     #get the available classes
     classes = []
     classes = t_model.get_labels()
-    #get the vocab size of the model
-    total_vocab_size = t_model.get_k_vocab_size()
+    
     prob_doc_class = []
     max=0.0
     label_classified = ''
@@ -56,7 +51,8 @@ def classify(t_model,words):
         class_vocab = t_model.get_class_vocab(label)
         class_vocab_count = ()
         class_vocab_count = t_model.get_class_vocab_count(label)       
-    
+        #get the vocab size of the model
+        total_vocab_size = t_model.get_k_vocab_size(label)
         
         #add one smoothing
         #P(word|c) = count(word,c)+1 / N(:total no of words in the class) + k(:total vocab size)
@@ -84,10 +80,14 @@ def xml_parser(line):
 
 def main():
     
+    if len(sys.argv) < 3:
+        print("Usage: python3 nbclassify.py model_file test_file > output_filename")
+        return
+    
     
     #read the model file and build a dictionary
     model_file = codecs.open(sys.argv[1],'r+', 'utf-8',errors='ignore')
-    output_file = open("output.txt",'w+')
+        
     header = []
     lines = model_file.readlines()
     header = re.split(r'\s+' , lines[0].rstrip())
@@ -110,9 +110,10 @@ def main():
     label = ''
     words = []
     dict = {}
+    
     for line in lines[1:]:
         words = xml_parser(line)        
-        if len(words) == 3: #case of open tags
+        if len(words) == 3: #open tags for classes
             label = words[0]
             class_vocab_count[label] = (int(words[1]),int(words[2]))
         elif len(words) == 2: #element tags
@@ -122,25 +123,23 @@ def main():
     training_model = Training_model(classes,class_priors,class_vocab_count,class_vocab_map)
     #print(training_model.get_labels())
     model_file.close()
-    #output_file = codecs.open("output.txt" ,'w+', 'utf-8',errors='ignore')
     
     
     #take the input file which has to be classified
     #each line is a document. Split each line on the basis of spaces
     #print("Opening test file")
     test_file = codecs.open(sys.argv[2],'r+','utf-8',errors='ignore')
-    #print("File opened successfully")
+
     label = ''
-    log= ''
     for line in test_file:
         words = []
         words = re.split(r'\s+' , line.rstrip()) #split on spaces and remove new line character
-        label = classify(training_model,words[1:]) #call the classify method passing the training model
-        print(words[0],label)
-        log = words[0] +' '+ label
-        output_file.write(log+'\n')
+        label = classify(training_model,words) #call the classify method passing the training model
+        #print(words[0],label)
+        #write classified label to output file
+        print(label)
     
-    output_file.close()
+    
     test_file.close()
     return
 
