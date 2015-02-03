@@ -20,10 +20,15 @@ class Training_model:
     def get_class_vocab(self, label):
         return self.vocab_map[label]
     
-    def get_k_vocab_size(self,label):
-        count_tuple = self.count_map[label]
+    def get_k_vocab_size(self):
+        count_tuple = ()
+        k = 0
         #count_tuple[0] contains the unique number of words in the corresponding class
-        return count_tuple[0]
+        for key in self.count_map:
+            count_tuple = self.count_map[key]
+            k += count_tuple[0]
+        
+        return k
     
     def get_prior(self,label):
         return self.class_prior[label]
@@ -52,16 +57,16 @@ def classify(t_model,words):
         class_vocab_count = ()
         class_vocab_count = t_model.get_class_vocab_count(label)       
         #get the vocab size of the model
-        total_vocab_size = t_model.get_k_vocab_size(label)
+        total_vocab_size = t_model.get_k_vocab_size()
         
         #add one smoothing
         #P(word|c) = count(word,c)+1 / N(:total no of words in the class) + k(:total vocab size)
         for word in words:
             if word in class_vocab:
-                p_d_given_c += math.log(float((class_vocab[word]+1)/(class_vocab_count[1]+total_vocab_size)))
+                p_d_given_c += math.log(float((class_vocab[word]+1)/(class_vocab_count[1]+total_vocab_size+1)))
             else:
                 #for unknown words just keeping 1 in the numerator
-                p_d_given_c += math.log(float(1/(class_vocab_count[1]+total_vocab_size)))
+                p_d_given_c += math.log(float(1/(class_vocab_count[1]+total_vocab_size+1)))
         
         p_c_given_d = prior_c + p_d_given_c
         prob_doc_class.append((p_c_given_d,label))

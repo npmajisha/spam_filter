@@ -6,6 +6,7 @@ import string
 import re
 import sys
 import codecs
+import random
 
 #add label based on the filename
 def add_label(filename):
@@ -32,23 +33,24 @@ def main():
     
     #usage details
     if len(sys.argv) < 4:
-        print("Usage : python3 readfiles.py --test/train /path/to/directory output_filename")
+        print("Usage : python3 readfiles.py --test/train --shuffle/sorted /path/to/directory output_filename")
         exit(0)
     
     #output file of the format class_label feature1 feature2...featurnN
-    o_file = codecs.open(sys.argv[3], 'w+', 'utf-8')
+    o_file = codecs.open(sys.argv[4], 'w+', 'utf-8')
     
     feature_list = ""
  
-    for root , dirs , files in os.walk('./'+sys.argv[2],topdown=False):
-
-        for filename in sorted(files): #sort the files to preserve order
+    #for root , dirs , files in os.walk('./'+sys.argv[2],topdown=False):
+        
+    if sys.argv[1] == '--train':
+        files = sorted(os.listdir('./'+sys.argv[3]))
+        if sys.argv[2] == '--shuffle':
+            random.shuffle(files)
+        for filename in files: #sort the files to preserve order
             if filename.endswith('.txt'):
-                i_file = codecs.open('./'+sys.argv[2]+'/'+filename,'r+' , 'utf-8', errors='ignore')
-                if sys.argv[1]=='--train':
-                    feature_list = add_label(filename) #add class label 'HAM'/'SPAM' or 'POS/NEG'
-                elif sys.argv[1] =='--test':
-                    feature_list = ''
+                i_file = codecs.open('./'+sys.argv[3]+'/'+filename,'r+' , 'utf-8', errors='ignore')
+                feature_list = add_label(filename) #add class label 'HAM'/'SPAM' or 'POS/NEG'
                 #build feature_list by concatenating all the tokens            
                 for line in i_file:                    
                     feature_list += tokenize(line.lower())
@@ -57,7 +59,23 @@ def main():
                 o_file.write(feature_list+'\n')
                 
                 #close the input file
-                i_file.close()           
+                i_file.close()   
+    else:
+        for filename in sorted(os.listdir('./'+sys.argv[3])): #sort the files to preserve order
+            if filename.endswith('.txt'):
+                i_file = codecs.open('./'+sys.argv[3]+'/'+filename,'r+' , 'utf-8', errors='ignore')
+           
+                feature_list = ''
+                #build feature_list by concatenating all the tokens            
+                for line in i_file:                    
+                    feature_list += tokenize(line.lower())
+                
+                #single line for each document
+                o_file.write(feature_list+'\n')
+                
+                #close the input file
+                i_file.close()  
+        
     
         
     #close the output file    

@@ -4,10 +4,9 @@
 #f1 score = 2*precision*recall/ precision + recall
 import sys
 import re
+import os
 
 def main():
-    
-    output_file = open(sys.argv[1],'r+')
     
     words = []
     # act - actual count of documents in a class
@@ -28,28 +27,35 @@ def main():
     class_neg = []
     
     for i in range(3):
-        corr_ham_count[i] = 0
-        corr_spam_count[i] = 0
-        class_ham[i] = 0
-        class_spam[i] = 0
-        corr_pos_count[i] = 0
-        corr_neg_count[i] = 0
-        class_neg[i] = 0
-        class_pos[i] = 0
+        corr_ham_count.append(0)
+        corr_spam_count.append(0)
+        class_ham.append(0)
+        class_spam.append(0)
+        corr_pos_count.append(0)
+        corr_neg_count.append(0)
+        class_neg.append(0)
+        class_pos.append(0)
     
     spam_out = open("spam.out",'r+')
-    svm_spam_out = open("spam.svm.out",'r+')
-    megam_spam_out = open("spam.megam.out",'r+')
+    svm_spam_out = open(os.path.join("./svm_light","spam.svm.out"),'r+')
+    megam_spam_out = open(os.path.join("./MEGAM","spam.megam.out"),'r+')
     sentiment_out = open("sentiment.out",'r+')
-    svm_sent_out = open("sentiment.svm.out",'r+')
-    megam_sent_out = open("sentiment.megam.out",'r+')
+    svm_sent_out = open(os.path.join("./svm_light","sentiment.svm.out"),'r+')
+    megam_sent_out = open(os.path.join("./MEGAM","sentiment.megam.out"),'r+')
 
     for root , dirs , files in os.walk('./'+sys.argv[2],topdown=False):
 
         for filename in sorted(files):
-            nb_out = spam_out.readline().rstrip()
-            svm_out = svm_spam_out.readline().rstrip()
-            megam_out = megam_spam_out.readline().rstrip()
+            if sys.argv[1] == '--spam':
+                
+                nb_out = spam_out.readline().rstrip()
+                svm_out = svm_spam_out.readline().rstrip()
+                megam_out = megam_spam_out.readline().rstrip()
+            else:
+                nb_out = sentiment_out.readline().rstrip()
+                svm_out = svm_sent_out.readline().rstrip()
+                megam_out = megam_sent_out.readline().rstrip()
+                
             if filename.startswith('HAM'):
                 act_ham_count +=1               
                 
@@ -81,16 +87,16 @@ def main():
                     class_ham[0] += 1
                 
                 if svm_out == 'SPAM':
-                    corr_ham_count[1] +=1
-                    class_ham[1] += 1
+                    corr_spam_count[1] +=1
+                    class_spam[1] += 1
                 elif svm_out == 'HAM':
-                    class_spam[1] +=1
+                    class_ham[1] +=1
                     
                 if megam_out == 'SPAM':
-                    corr_ham_count[2] +=1
-                    class_ham[2] += 1
+                    corr_spam_count[2] +=1
+                    class_spam[2] += 1
                 elif nb_out == 'HAM':
-                    class_spam[2] +=1
+                    class_ham[2] +=1
     
             
             if filename.startswith('POS'):
@@ -110,7 +116,7 @@ def main():
                     
                 if megam_out == 'POS':
                     corr_pos_count[2] +=1
-                    class_neg[2] += 1
+                    class_pos[2] += 1
                 elif megam_out == 'NEG':
                     class_neg[2] +=1
                     
@@ -192,6 +198,7 @@ def main():
             print('F1 score HAM' ,f1_score)
             f1_score = (2*precision_spam *recall_spam)/(precision_spam +recall_spam)
             print('F1 score SPAM',f1_score)
+        
         
         if class_pos[i]!=0 and class_neg[i]!=0:
             precision_pos = float(corr_pos_count[i]/class_pos[i])
