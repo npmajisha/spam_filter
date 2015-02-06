@@ -74,4 +74,4 @@ But not very significant. The reason for decrease could be that some of the prom
 set are not present. However I was expecting a significant decrease in the F-score , but it could be because the training set chosen
 resembled the dev set very closely.
 On the contrary MegaM MaxEntropy classifier seems to have slightly better F-score, this is again strange to me.
-But the only possible explanation is that the training set possibly captured the features present in the dev set closely.
+But the only possible explanation I can think of is that the training set possibly captured the features present in the dev set closely.
