@@ -50,6 +50,7 @@ def main():
         for filename in files: #sort the files to preserve order
             if filename.endswith('.txt'):
                 i_file = codecs.open('./'+sys.argv[3]+'/'+filename,'r+' , 'utf-8', errors='ignore')
+                
                 feature_list = add_label(filename) #add class label 'HAM'/'SPAM' or 'POS/NEG'
                 #build feature_list by concatenating all the tokens            
                 for line in i_file:                    
@@ -64,7 +65,7 @@ def main():
         for filename in sorted(os.listdir('./'+sys.argv[3])): #sort the files to preserve order
             if filename.endswith('.txt'):
                 i_file = codecs.open('./'+sys.argv[3]+'/'+filename,'r+' , 'utf-8', errors='ignore')
-           
+                
                 feature_list = ''
                 #build feature_list by concatenating all the tokens            
                 for line in i_file:                    

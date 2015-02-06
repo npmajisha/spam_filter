@@ -35,13 +35,14 @@ def main():
         corr_neg_count.append(0)
         class_neg.append(0)
         class_pos.append(0)
-    
-    spam_out = open("spam.out",'r+')
-    svm_spam_out = open(os.path.join("./svm_light","spam.svm.out"),'r+')
-    megam_spam_out = open(os.path.join("./MEGAM","spam.megam.out"),'r+')
-    sentiment_out = open("sentiment.out",'r+')
-    svm_sent_out = open(os.path.join("./svm_light","sentiment.svm.out"),'r+')
-    megam_sent_out = open(os.path.join("./MEGAM","sentiment.megam.out"),'r+')
+    if sys.argv[1] == '--spam':
+        spam_out = open("spam.dev.out",'r+')
+        svm_spam_out = open(os.path.join("./svm_light","spam.dev.svm.out"),'r+')
+        megam_spam_out = open(os.path.join("./MEGAM","spam.dev.megam.out"),'r+')
+    else:
+        sentiment_out = open("sentiment.dev.out",'r+')
+        svm_sent_out = open(os.path.join("./svm_light","sentiment.dev.svm.out"),'r+')
+        megam_sent_out = open(os.path.join("./MEGAM","sentiment.dev.megam.out"),'r+')
 
     for root , dirs , files in os.walk('./'+sys.argv[2],topdown=False):
 
@@ -51,6 +52,7 @@ def main():
                 nb_out = spam_out.readline().rstrip()
                 svm_out = svm_spam_out.readline().rstrip()
                 megam_out = megam_spam_out.readline().rstrip()
+
             else:
                 nb_out = sentiment_out.readline().rstrip()
                 svm_out = svm_sent_out.readline().rstrip()

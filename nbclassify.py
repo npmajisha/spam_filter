@@ -8,11 +8,12 @@ import math
 
 #class to store the training model read from the model_file
 class Training_model:
-    def __init__(self,class_list,class_priors, count_map , vocab_map):
+    def __init__(self,class_list,total_vocab_size,class_priors, count_map , vocab_map):
         self.count_map = count_map 
         self.vocab_map = vocab_map
         self.class_list = class_list
         self.class_prior = class_priors
+        self.total_vocab_size = total_vocab_size
     
     def get_class_vocab_count(self,label):
         return self.count_map[label]
@@ -21,14 +22,15 @@ class Training_model:
         return self.vocab_map[label]
     
     def get_k_vocab_size(self):
-        count_tuple = ()
-        k = 0
-        #count_tuple[0] contains the unique number of words in the corresponding class
-        for key in self.count_map:
-            count_tuple = self.count_map[key]
-            k += count_tuple[0]
-        
-        return k
+##        count_tuple = ()
+##        k = 0
+##        #count_tuple[0] contains the unique number of words in the corresponding class
+##        for key in self.count_map:
+##            count_tuple = self.count_map[key]
+##            k += count_tuple[0]
+##        
+##        return k
+        return self.total_vocab_size
     
     def get_prior(self,label):
         return self.class_prior[label]
@@ -44,14 +46,10 @@ def classify(t_model,words):
     classes = t_model.get_labels()
     
     prob_doc_class = []
-    max=0.0
-    label_classified = ''
-    for label in classes: #calculare P(c|d) = P(c) * P(d|c) = P(c) * P(w1|c) * P(w2|c) ... P(wn|c)
-        #print(label)
+    for label in classes: #calculate P(c|d) = P(c) * P(d|c) = P(c) * P(w1|c) * P(w2|c) ... P(wn|c)
         p_c_given_d = 0.0
         p_d_given_c = 0.0
         prior_c = math.log(t_model.get_prior(label))
-        #print(str(prior_c))
         class_vocab = {}
         class_vocab = t_model.get_class_vocab(label)
         class_vocab_count = ()
@@ -63,14 +61,14 @@ def classify(t_model,words):
         #P(word|c) = count(word,c)+1 / N(:total no of words in the class) + k(:total vocab size)
         for word in words:
             if word in class_vocab:
-                p_d_given_c += math.log(float((class_vocab[word]+1)/(class_vocab_count[1]+total_vocab_size+1)))
+                p_d_given_c += math.log((class_vocab[word]+1)/(class_vocab_count[1]+total_vocab_size+1))
             else:
                 #for unknown words just keeping 1 in the numerator
-                p_d_given_c += math.log(float(1/(class_vocab_count[1]+total_vocab_size+1)))
+                p_d_given_c += math.log(1/(class_vocab_count[1]+total_vocab_size+1))
         
         p_c_given_d = prior_c + p_d_given_c
-        prob_doc_class.append((p_c_given_d,label))
-            
+        prob_doc_class.append((p_c_given_d,label)) 
+         
     return  ((sorted(prob_doc_class, reverse=True)[0])[1])
     
         
@@ -96,6 +94,7 @@ def main():
     header = []
     lines = model_file.readlines()
     header = re.split(r'\s+' , lines[0].rstrip())
+    total_vocab_size = int(re.split(r'\s+',lines[1].rstrip())[1])
     class_vocab_count = {} #dictionary to store a tuple (k,N) here N is the total number of words and k is the number of unique words
     class_priors = {}
     class_vocab_map = {} #dictionary to store the vocabulary of each 
@@ -116,8 +115,8 @@ def main():
     words = []
     dict = {}
     
-    for line in lines[1:]:
-        words = xml_parser(line)        
+    for line in lines[2:]:
+        words = xml_parser(line)  
         if len(words) == 3: #open tags for classes
             label = words[0]
             class_vocab_count[label] = (int(words[1]),int(words[2]))
@@ -125,7 +124,7 @@ def main():
             dict = class_vocab_map[label]
             dict[words[0]] = int(words[1])
     
-    training_model = Training_model(classes,class_priors,class_vocab_count,class_vocab_map)
+    training_model = Training_model(classes,total_vocab_size,class_priors,class_vocab_count,class_vocab_map)
     #print(training_model.get_labels())
     model_file.close()
     

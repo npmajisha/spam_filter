@@ -65,6 +65,8 @@ def main():
                     word_count[word] += 1
                 else:
                     word_count[word] = 1
+                    
+            total_words = len(words)-1
         else:
             svm_line = '0 '
             if sys.argv[1] == '--dev':
@@ -77,13 +79,15 @@ def main():
                 else:
                     word_count[word] = 1
             
+            total_words = len(words)
+            
         
         for word in word_count:
             if word in dict:
-                feature_vector[word] = (dict[word] , float(word_count[word]/(len(words)-1)))
-##            else: # will happen in case of test file
-##                dict[word] = len(dict)+1
-##                feature_vector[word] = (dict[word], float(1/len(words)))
+                feature_vector[word] = (dict[word] , float(word_count[word]/total_words))
+            else: # will happen in case of test file
+                dict[word] = len(dict)+1
+                feature_vector[word] = (dict[word], float(word_count[word]/total_words))
             
         
         for item in sorted(feature_vector,key= lambda x : feature_vector[x][0]):

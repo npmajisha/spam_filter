@@ -41,11 +41,9 @@ def main():
             
         #MegaM non bernoulli format class_label (feature_name feature_value)
         for word in sorted(word_count):
-            mega_line += str(word)+ ' ' + str(word_count[word])+' '
-            
-##        for word in words[1:]:
-##            mega_line += str(word)+ ' '
+            mega_line += str(word)+ ' '+ str(word_count[word])+' '            
         
+                                        
         #write each line to output file    
         output_file.write(mega_line.rstrip() + '\n')
         

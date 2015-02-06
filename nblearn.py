@@ -18,6 +18,7 @@ def main():
     training_file = codecs.open(sys.argv[1], 'r', 'utf-8',errors='ignore')
     model_file = codecs.open(sys.argv[2], 'w' , 'utf-8',errors='ignore')	
     
+    common_dictionary = {}
     class_vocab_map = {} #a dictionary to store class and the corresponding vocabulary
     class_docs = {} #dictionary to store class and documents count
     classes = []
@@ -36,20 +37,24 @@ def main():
             class_vocab_map[words[0]] = vocab
         else:
             class_docs[words[0]] = class_docs[words[0]]+1
-        vocab = class_vocab_map[words[0]]
+            vocab = class_vocab_map[words[0]]
         
         for word in words[1:]:
             if word not in vocab:
                 vocab[word] = 1
             else:
                 vocab[word] = vocab[word] + 1
+                
+            if word not in common_dictionary:
+                common_dictionary[word] = 1
+        
 						
 		
 	
     #constructing the xml elements
     log = ""
     header = ""
-    
+    total_vocab_size = len(common_dictionary)
     for key in class_vocab_map:
         inner_element = ""
         
@@ -82,6 +87,7 @@ def main():
     
     #write to the model file
     model_file.write(str( header + '\n'))
+    model_file.write("vocab_size"+' '+ str(total_vocab_size)+'\n')
     model_file.write(log)    
     model_file.close()
     return
