@@ -1,0 +1,3 @@
+Naive Bayes
+SVM_Light
+MegaM Light
